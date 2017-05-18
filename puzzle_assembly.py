@@ -13,6 +13,7 @@ class Puzzle(object):
         self.corners = {(1, 1, 0, 0):(0, 0), (0, 1, 1, 0):(dims-1, 0), (0, 0, 1, 1):(dims-1, dims-1), (1, 0, 0, 1):(0, dims-1)}
         self.edges = {x:[] for x in range(4)}
         self.middle = []
+        self.mid_idx = 1
         
     def read_data(self, line):
         test = [int(i==j) for i, j in zip(line, self.edge_test)]
@@ -47,29 +48,77 @@ class Puzzle(object):
             if test and each[0][1] == self.results[self.dims-1][0][3] and each[-1][3]==self.results[self.dims-1][self.dims-1][1]:
                 self.results[self.dims-1][1:-1] = each
         return
-                
-        
-        
-p = Puzzle(4)
+    
+    def sides(self):
+        left_perms = It.permutations(self.edges[1])
+        for each in left_perms:
+            test = True
+            for i in range(len(each)-1):
+                if each[i][2] != each[i+1][0]:
+                    test = False
+            if test and each[0][0] == self.results[0][0][2] and each[-1][2]==self.results[self.dims-1][0][0]:
+                for i in range(len(each)):
+                    self.results[i+1][0] = each[i]
+                break
+        right_perms = It.permutations(self.edges[3])
+        for each in right_perms:
+            test = True
+            for i in range(len(each)-1):
+                if each[i][2] != each[i+1][0]:
+                    test = False
+            if test and each[0][0] == self.results[0][self.dims-1][2] and each[-1][2]==self.results[self.dims-1][self.dims-1][0]:
+                for i in range(len(each)):
+                    self.results[i+1][self.dims-1] = each[i]
+                break        
+    
+    def center(self):
+        if not self.middle:
+            return
+        center_perms = It.permutations(self.middle, self.dims - 2)
+        for each in center_perms:
+            test = True
+            for i in range(len(each)-1):
+                if each[i][3] != each[i+1][1]:
+                    test = False
+#            print(test, all([e1==e2 for e1, e2 in zip([item[0] for item in each],[item2 for item2 in self.results[self.mid_idx-1][1:-1]])]))
+            if test and each[0][1] == self.results[self.mid_idx][0][3] and \
+                        each[-1][3] == self.results[self.mid_idx][self.dims-1][1] and \
+                        all([e1==e2 for e1, e2 in zip([item[0] for item in each],[item2[2] for item2 in self.results[self.mid_idx-1][1:-1]])]):
 
-l= [('black','black','green','red'),('black','red','blue','green'),('black','green','red','yellow'),('black','yellow','blue','black'),
-    ('green','black','blue','purple'),('blue','purple','purple','green'),('red','green','blue','yellow'),('blue','yellow','green','black'),
-    ('blue','black','yellow','green'),('purple','green','red','yellow'),('blue','yellow','green','purple'),('green','purple','yellow','black'),
-    ('yellow','black','black','purple'),('red','purple','black','purple'),('green','purple','black','blue'),('yellow','blue','black','black'),]
+                self.results[self.mid_idx][1:-1] = each
+                for sqr in each:
+                    self.middle.remove(sqr)
+                self.mid_idx += 1
+                break
+        self.center()
 
-#l = [('yellow','black','black','blue'), 
-#     ('blue','blue','black','yellow'), 
-#     ('orange','yellow','black','black'),
-#     ('red','black','yellow','green'),
-#     ('orange','green','blue','blue'),
-#     ('green','blue','orange','black'),
-#     ('black','black','red','red'),
-#     ('black','red','orange','purple'),
-#     ('black','purple','green','black')]
+    def run(self):
+        self.top_bottom()
+        self.sides()
+        self.center()
+        for row in self.results:
+            print(";".join([str(t) for t in row]).replace(' ', '').replace("'", ""))
+                    
+            
+#p = Puzzle(4)
+#
+#l= [('black','black','green','red'),('black','red','blue','green'),('black','green','red','yellow'),('black','yellow','blue','black'),
+#    ('green','black','blue','purple'),('blue','purple','purple','green'),('red','green','blue','yellow'),('blue','yellow','green','black'),
+#    ('blue','black','yellow','green'),('purple','green','red','yellow'),('blue','yellow','green','purple'),('green','purple','yellow','black'),
+#    ('yellow','black','black','purple'),('red','purple','black','purple'),('green','purple','black','blue'),('yellow','blue','black','black'),]
+#
+##l = [('yellow','black','black','blue'), 
+##     ('blue','blue','black','yellow'), 
+##     ('orange','yellow','black','black'),
+##     ('red','black','yellow','green'),
+##     ('orange','green','blue','blue'),
+##     ('green','blue','orange','black'),
+##     ('black','black','red','red'),
+##     ('black','red','orange','purple'),
+##     ('black','purple','green','black')]
 
 for line in l:
     p.read_data(line)
-print(p.top_bottom())
-print(p.results)
+p.run()
         
         
