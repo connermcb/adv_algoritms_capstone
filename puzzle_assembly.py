@@ -1,8 +1,10 @@
+#python3
 # -*- coding: utf-8 -*-
 """
 Puzzle Assembly
 """
 import itertools as It
+import sys
 
 class Puzzle(object):
     
@@ -117,8 +119,37 @@ class Puzzle(object):
 ##     ('black','red','orange','purple'),
 ##     ('black','purple','green','black')]
 
-for line in l:
+p = Puzzle(5)
+#l = ['(black,black,blue,cyan)',
+# '(black,brown,maroon,red)',
+# '(black,cyan,yellow,brown)',
+# '(black,red,green,black)',
+# '(black,red,white,red)',
+# '(blue,black,orange,yellow)',
+# '(blue,cyan,white,black)',
+# '(brown,maroon,orange,yellow)',
+# '(green,blue,blue,black)',
+# '(maroon,black,yellow,purple)',
+# '(maroon,blue,black,orange)',
+# '(maroon,orange,brown,orange)',
+# '(maroon,yellow,white,cyan)',
+# '(orange,black,maroon,cyan)',
+# '(orange,orange,black,black)',
+# '(orange,purple,maroon,cyan)',
+# '(orange,purple,purple,purple)',
+# '(purple,brown,black,blue)',
+# '(red,orange,black,orange)',
+# '(white,cyan,red,orange)',
+# '(white,orange,maroon,blue)',
+# '(white,orange,orange,black)',
+# '(yellow,black,black,brown)',
+# '(yellow,cyan,orange,maroon)',
+# '(yellow,yellow,yellow,orange)']
+#print(len(l))
+for i in range(25):
+    line = sys.stdin.readline().strip()
+    line = tuple(line[1:-1].split(','))
     p.read_data(line)
 p.run()
         
-        
+   
