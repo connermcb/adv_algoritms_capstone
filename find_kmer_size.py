@@ -43,7 +43,14 @@ class Graph(object):
 
                 
                 
-    def has_euler(self):
+    def is_connected(self):
+        
+        return True
+    
+    def is_balanced(self):
+        for each in self.degrees.items():
+            if each[1][0] != each[1][1]:
+                return False
         return True
     
     def run(self):
