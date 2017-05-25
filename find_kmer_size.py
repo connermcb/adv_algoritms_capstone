@@ -27,8 +27,10 @@ class Graph(object):
         self.node_set = list(temp)
         
     def make_graph(self):
-        for node1 in self.node_set:
-            for node2 in self.node_set:
+        for node in self.node_set:
+            self.components[node] = -1
+        for u in self.node_set:
+            for v in self.node_set:
                 
                 
     def has_euler(self):
