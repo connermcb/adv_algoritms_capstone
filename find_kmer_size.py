@@ -29,8 +29,11 @@ class Graph(object):
     def make_graph(self):
         for node in self.node_set:
             self.components[node] = -1
-        for u in self.node_set:
-            for v in self.node_set:
+        for kmer in self.node_set:
+            if kmer in self.graph:
+                self.graph[kmer[:-1]].append(kmer[1:])
+            else:
+                self.graph[kmer[:-1]] = kmer[1:]
                 
                 
     def has_euler(self):
