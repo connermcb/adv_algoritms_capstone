@@ -23,13 +23,13 @@ class Graph(object):
         temp = []
         for node in self.node_set:
             for i in range(orgnl - k + 1):
-                temp.append(node[i:i+1])
-                
+                temp.append(node[i:i+k])
+        self.node_set = list(temp)
         
-    def make_graph(self, k):
+    def make_graph(self):
         for node1 in self.node_set:
             for node2 in self.node_set:
-                pass
+                
                 
     def has_euler(self):
         return True
@@ -37,4 +37,9 @@ class Graph(object):
     def run(self):
         pass
     
-    
+g = Graph()
+
+l = ['ATCCGA']
+g.add_node(l[0])
+g.divide_kmers(2)
+print(g.node_set)
