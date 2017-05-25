@@ -3,7 +3,7 @@
 """
 Optimal k-mer Size
 """
-
+import sys
 
 class Graph(object):
     
@@ -72,26 +72,37 @@ class Graph(object):
         return True
     
     def run(self):
-        for k in range(100, 1, -1):
-            self.divide_kmers(i)
+        for k in range(25, 1, -1):
+            self.divide_kmers(k)
             self.make_graph()
             self.calc_degrees()
             if g.is_balanced():
                 print(k)
                 return
-    
-g = Graph()
+        return None
 
-l = ['AACG','ACGT','CAAC','GTTG','TGCA']
-for each in l:
-    g.add_node(each)
-g.divide_kmers(4)
-g.make_graph()
-g.calc_degrees()
-print(g.is_balanced())
-g.divide_kmers(3)
-g.make_graph()
-g.calc_degrees()
-print(g.graph)
-print(g.degrees)
-print(g.is_balanced())
+
+if __name__ == "__main__":
+    
+    g = Graph()
+    for i in range(400):
+        g.add_node(str(input()))
+    g.run()
+#for i in range(1618):
+#c = str(sys.stdin.readline()).strip().split()
+#g.add_node([c][0])
+#
+#g.run()
+
+#for each in l:
+#    g.add_node(each)
+#g.divide_kmers(4)
+#g.make_graph()
+#g.calc_degrees()
+#print(g.is_balanced())
+#g.divide_kmers(3)
+#g.make_graph()
+#g.calc_degrees()
+#print(g.graph)
+#print(g.degrees)
+#print(g.is_balanced())
