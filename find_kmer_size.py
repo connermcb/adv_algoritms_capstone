@@ -28,8 +28,9 @@ class Graph(object):
         
     def make_graph(self):
         for node in self.node_set:
-            self.components[node] = -1
-            self.components[self.node_set[0]] = 1
+            self.components[node[:-1]] = -1
+            self.components[node[1:]] = -1
+            self.components[self.node_set[0][:-1]] = 1
         for kmer in self.node_set:
             if kmer in self.graph:
                 self.graph[kmer[:-1]].append(kmer[1:])
