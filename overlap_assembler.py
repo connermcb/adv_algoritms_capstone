@@ -1,7 +1,7 @@
 #python3
 # -*- coding: utf-8 -*-
 """
-Overlap Assembler
+Overlap Assembler 
 """
 import itertools as it
 import string
@@ -20,7 +20,7 @@ class Overlap(object):
         self.reads.append(line)
         self.graph[line] = (None, self.read_length)
         
-    def build_graph(self):
+    def build_graph_without_errors(self):
         self.perms = it.permutations(reads, 2)
         for pair in self.perms:
             r1, r2 = pair
@@ -28,6 +28,28 @@ class Overlap(object):
             pos = 0
             for i in range(0, range_end):
                 if r1[i:] == r2[:self.read_length-i]:
+                    pos = int(i)
+                    break
+            if pos > 0:
+                self.graph[r1] = (r2, pos)
+                
+    def hamming_dist(self, r1, r2):
+        dist = 0
+        for i in range(len(r1)):
+            if r1[i] != r2[i]:
+                dist += 1
+            if dist > 2:
+                break
+        return dist
+                
+    def build_graph_with_errors(self):
+        self.perms = it.permutations(reads, 2)
+        for pair in self.perms:
+            r1, r2 = pair
+            range_end = self.graph[r1][1]
+            pos = 0
+            for i in range(0, range_end):
+                if self.hamming_dist(r1[i:], r2[:self.read_length-i]):
                     pos = int(i)
                     break
             if pos > 0:
@@ -68,7 +90,7 @@ for i in range(1618):
 o=Overlap(100)
 for read in reads:
     o.add_line(read)
-o.build_graph()
+o.build_graph_with_errors()
 o.find_path()
 o.trim()
 print(o.result)
