@@ -48,7 +48,6 @@ class OverlapEP(object):
 
     def get_cumulative_indices(self):
         self.cumulative_indices = {read:0 for read in self.reads}
-#        nxt = self.reads[0]
         stack = [self.reads[0]]
         while stack:
             nxt = stack.pop(0)
@@ -57,21 +56,18 @@ class OverlapEP(object):
                 stack.append(each[0])
             if self.reads[0] in stack:
                 break
-
-            
                
     def build_overlaps(self):
-        cumulative_idx = {read:0 for read in self.reads}
-        nxt = None
-        c_idx = 0
-        stack = [each for each in self.graph[self.reads[0]]]
         self.result = [[ltr] for ltr in self.reads[0]]
-        while stack:
-            if nxt == self.reads[0]:
-                break
-            prv, nxt = nxt, stack.pop(0)
-            cummulative_idx[nxt] = c_idx
-            
+        reads_by_index =  sorted(self.cumulative_indices.items(), key=lambda x:x[1])
+        for each in reads_by_index:
+            result_length = len(self.result)
+            read, start = each
+            overlap = result_length - start
+            for i in range(overlap):
+                self.result[start+i].append(read[i])
+            for j in range(overlap,len(read)):
+                self.result.append([read[j]])
             
         
     
@@ -94,7 +90,8 @@ for each in reads:
 o.build_graph_ep()
 print(o.graph)
 o.get_cumulative_indices()
-print(o.cumulative_indices)
+print(type(o.cumulative_indices))
+o.build_overlaps()
 #o.find_path()
 #o.trim()
 #print(o.result)   
