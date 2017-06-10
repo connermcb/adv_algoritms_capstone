@@ -40,7 +40,15 @@ class Overlap(object):
             nxt, pos = self.graph[nxt]
             self.result += nxt[self.read_length-pos:]
             
+    def trim(self):
+        pos = 1
+        while True:
+            if self.result[:pos] == self.result[-pos:]:
+                self.result = self.result[:-pos]
+                return
+            pos += 1
     
+            
     
         
     
@@ -52,6 +60,8 @@ class Overlap(object):
 #    o.add_line(each)
 #o.build_graph()
 #o.find_path()
+#o.trim()
+#print(o.result)
 reads = []
 for i in range(1618):
     reads += [sys.stdin.readline().strip()]
@@ -60,5 +70,6 @@ for read in reads:
     o.add_line(read)
 o.build_graph()
 o.find_path()
+o.trim()
 print(o.result)
 
