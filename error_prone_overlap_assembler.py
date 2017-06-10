@@ -69,7 +69,9 @@ class OverlapEP(object):
             for j in range(overlap,len(read)):
                 self.result.append([read[j]])
             
-        
+    def flatten_overlaps(self):
+        for pos in range(len(self.result)):
+            self.result[pos] = mode(self.result[pos])
     
     def trim(self):
         pos = 1
@@ -84,14 +86,17 @@ reads = ['ABCDEFGHIJ','CDEFGHIJKL','GHIJKLMNOP','MNOPQRSTUV','NOPQRSTUVW','QRSTU
 #genome = string.ascii_uppercase
 #genome += genome[:10]
 #reads = [genome[i:i+5] for i in range(len(genome)-5)]
-o = OverlapEP(10)
-for each in reads:
-    o.add_line(each)
-o.build_graph_ep()
-print(o.graph)
-o.get_cumulative_indices()
-print(type(o.cumulative_indices))
-o.build_overlaps()
+#o = OverlapEP(10)
+#for each in reads:
+#    o.add_line(each)
+#o.build_graph_ep()
+#print(o.graph)
+#o.get_cumulative_indices()
+#print(type(o.cumulative_indices))
+#o.build_overlaps()
+#o.flatten_overlaps()
+#o.trim()
+#print(o.result)
 #o.find_path()
 #o.trim()
 #print(o.result)   
