@@ -45,21 +45,35 @@ class OverlapEP(object):
                     break
             if pos > 0:
                 self.graph[r1].append((r2, pos))
-                
-    def assemble_genome(self):
-        nxt = self.reads[0]
-        stack = [each for each in self.graph[nxt]]
-        print(stack)
-#        self.result = [[ltr] for ltr in nxt]
-#        while stack:
-#            if nxt == self.reads[0]:
-#                break
+
+    def get_cumulative_indices(self):
+        self.cumulative_indices = {read:0 for read in self.reads}
+#        nxt = self.reads[0]
+        stack = [self.reads[0]]
+        while stack:
+            nxt = stack.pop(0)
+            for each in self.graph[nxt]:
+                self.cumulative_indices[each[0]] = self.cumulative_indices[nxt] + each[1]
+                stack.append(each[0])
+            if self.reads[0] in stack:
+                break
+
+            
+               
+    def build_overlaps(self):
+        cumulative_idx = {read:0 for read in self.reads}
+        nxt = None
+        c_idx = 0
+        stack = [each for each in self.graph[self.reads[0]]]
+        self.result = [[ltr] for ltr in self.reads[0]]
+        while stack:
+            if nxt == self.reads[0]:
+                break
+            prv, nxt = nxt, stack.pop(0)
+            cummulative_idx[nxt] = c_idx
             
             
-            
-            
-        print(self.result)
-        pass
+        
     
     def trim(self):
         pos = 1
@@ -79,8 +93,8 @@ for each in reads:
     o.add_line(each)
 o.build_graph_ep()
 print(o.graph)
-o.assemble_genome()
-
+o.get_cumulative_indices()
+print(o.cumulative_indices)
 #o.find_path()
 #o.trim()
 #print(o.result)   
