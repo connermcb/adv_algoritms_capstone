@@ -24,24 +24,27 @@ class OverlapEP(object):
         self.result = []
         self.nxt = 0
 
-    def compare(self, nxt):
-        for i in range(99, 10, -1):
-            test = self.reads[nxt, 100-i:] == self.reads[:, :i]
+    def reads_compare(self, nxt):
+        for i in range(9, 0, -1):
+            test = self.reads[nxt, 10-i:] == self.reads[:, :i]
             counts = np.count_nonzero(test==0, axis=1)
-            matches = np.nonzero(counts < 3)
-            if matches[0]:
-                self.pair_overlap_list[nxt, :] = [matches[0], i]
+            matches = np.nonzero(counts<3)
+            if len(matches[0])>0:
+                nxt = matches[0][0,]
+                self.pair_overlap_list[self.nxt,0] = nxt
+                self.pair_overlap_list[self.nxt,1] = i
                 self.searched[nxt] = True
-                self.nxt = matches[0]
+                self.nxt = int(nxt)
                 return
             
     def build_graph_ep(self):
         counter = 0
         while not np.all(self.searched):
             if counter > 1618:
+                print('reached end')
                 return
             counter += 1
-            self.compare(nxt)
+            self.reads_compare(self.nxt)
 
     def get_cumulative_indices(self):
         self.cumulative_indices = {read:0 for read in self.reads}
@@ -90,6 +93,9 @@ test_reads = [list(each) for each in test_reads]
 
 O = OverlapEP(10, test_reads)
 print(O.reads)
+print(O.pair_overlap_list)
+O.build_graph_ep()
+print(O.pair_overlap_list)
 #print(test_reads)
 #print(len(test_reads))
 #print(len(test_reads[0]))
