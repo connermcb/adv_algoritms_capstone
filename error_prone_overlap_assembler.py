@@ -3,8 +3,10 @@
 """
 Overlap Assembler with Error-Prone Reads
 """
+import phi_X174_formatter as fmtr
 import itertools as it
 import numpy as np
+import read_maker
 from statistics import mode
 import sys
 
@@ -19,16 +21,20 @@ class OverlapEP(object):
 
     def add_line(self, line):
         self.reads.append(line)
-        self.graph[line] = (None, self.read_length)
+        self.graph[line] = (None, 85)
 
     def hamming_dist(self, r1, r2):
+#        print(r1, r2)
         dist = 0
-        r1 = np.array(r1)
-        r2 = np.array(r2)
-        if np.count_nonzero(r1 != r2) > 2:
-            return False
-        else:
-            return True
+        l = len(r1)
+        print(l)
+        for i in range(l):
+            if r1[i] != r2[i]:
+                dist += 1
+            if dist > 2:
+                return False
+        return True
+ 
                 
     def build_graph_ep(self):
         self.perms = it.permutations(self.reads, 2)
@@ -83,22 +89,31 @@ class OverlapEP(object):
             pos += 1
 
 
-reads = []
-for i in range(1618):
-    reads += [sys.stdin.readline().strip()]
-o=OverlapEP(100)
-for read in reads:
-    o.add_line(read)
-o.build_graph_ep()
-o.result = ['A' for x in range(6000)]
-#o.get_cumulative_indices()
-#o.build_overlaps()
-#o.flatten_overlaps()
-print("".join(o.result))
+
+
+#if __name__ == "__main__":
+#    o = OverlapEP(100)
+#    genome = fmtr.reader()
+#    reads = read_maker.make_reads(genome, 1618)
+#    for r in reads:
+#        o.add_line(r)
+#    o.build_graph_ep()
+
+
+#o=OverlapEP(100)
+#for i in range(1618):
+#    o.add_line(sys.stdin.readline().strip())
+#
+##o.build_graph_ep()
+#o.result = ['A' for x in range(6000)]
+##o.get_cumulative_indices()
+##o.build_overlaps()
+##o.flatten_overlaps()
+#print("".join(o.result))
 
 
 
-#reads = ['ABCDEFGHIJ','CDEFGHIJKL','GHIJKLMNOP','MNOPQRSTUV','NOPQRSTUVW','QRSTUVWXYZ','UVWXYZABCD']
+#reads = ['ABCDEFGHIJ','CDEFGAIJKL','GHIJKLMNOP','MNOPQRSOUV','NOPQRRTUVW','QRSTUVZXYZ','UVWXYZABCD']
         
 #genome = string.ascii_uppercase
 #genome += genome[:10]
@@ -109,10 +124,11 @@ print("".join(o.result))
 #o.build_graph_ep()
 #print(o.graph)
 #o.get_cumulative_indices()
-#print(type(o.cumulative_indices))
+#print(o.cumulative_indices)
 #o.build_overlaps()
 #print(o.result)
 #o.flatten_overlaps()
+#print(o.result)
 #o.trim()
 #print(o.result)
 #print("".join(o.result))
