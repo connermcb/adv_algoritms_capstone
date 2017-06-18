@@ -19,23 +19,6 @@ class OverlapEP(object):
         self.graph = {}
         self.result = []
 
-    def add_line(self, line):
-        self.reads.append(line)
-        self.graph[line] = (None, 85)
-
-    def hamming_dist(self, r1, r2):
-#        print(r1, r2)
-        dist = 0
-        l = len(r1)
-        print(l)
-        for i in range(l):
-            if r1[i] != r2[i]:
-                dist += 1
-            if dist > 2:
-                return False
-        return True
- 
-                
     def build_graph_ep(self):
         self.perms = it.permutations(self.reads, 2)
         for pair in self.perms:
@@ -100,36 +83,5 @@ class OverlapEP(object):
 #    o.build_graph_ep()
 
 
-#o=OverlapEP(100)
-#for i in range(1618):
-#    o.add_line(sys.stdin.readline().strip())
-#
-##o.build_graph_ep()
-#o.result = ['A' for x in range(6000)]
-##o.get_cumulative_indices()
-##o.build_overlaps()
-##o.flatten_overlaps()
-#print("".join(o.result))
 
-
-
-#reads = ['ABCDEFGHIJ','CDEFGAIJKL','GHIJKLMNOP','MNOPQRSOUV','NOPQRRTUVW','QRSTUVZXYZ','UVWXYZABCD']
-        
-#genome = string.ascii_uppercase
-#genome += genome[:10]
-#reads = [genome[i:i+5] for i in range(len(genome)-5)]
-#o = OverlapEP(10)
-#for each in reads:
-#    o.add_line(each)
-#o.build_graph_ep()
-#print(o.graph)
-#o.get_cumulative_indices()
-#print(o.cumulative_indices)
-#o.build_overlaps()
-#print(o.result)
-#o.flatten_overlaps()
-#print(o.result)
-#o.trim()
-#print(o.result)
-#print("".join(o.result))
     
