@@ -16,11 +16,11 @@ import sys
 
 class OverlapEP(object):
     
-    def __init__(self, read_length, reads):
+    def __init__(self, read_length, num_reads, reads):
         self.read_length = read_length
+        self.num_reads = num_reads
         self.reads = np.array(reads)
         self.walk = [(0,0)]
-        self.pair_overlap_list = np.zeros((21, 2))
         self.searched = np.zeros(21, dtype=bool)
         self.graph = {}
         self.result = []
@@ -33,12 +33,8 @@ class OverlapEP(object):
             counts = np.count_nonzero(test==0, axis=1)
             matches = np.nonzero(counts<3)
             if len(matches[0])>0:
-                print(i)
-                print(matches)
                 nxt = matches[0][0,]
                 self.walk.append((nxt, i))
-                self.pair_overlap_list[self.nxt,0] = nxt
-                self.pair_overlap_list[self.nxt,1] = i
                 self.searched[nxt] = True
                 self.nxt = int(nxt)
                 return
@@ -53,20 +49,16 @@ class OverlapEP(object):
             self.reads_compare(self.nxt)
 
     def get_cumulative_indices(self):
-        self.cumulative_indices = {read:0 for read in self.reads}
-        stack = [self.reads[0]]
-        while stack:
-            nxt = stack.pop(0)
-            new = self.graph[nxt]
-            self.cumulative_indices[new[0]] = self.cumulative_indices[nxt] + new[1]
-            stack.append(new[0])
-            if self.reads[0] in stack:
-                break
+        self.cumulative_indices = {read:0 for read in range(self.num_reads)}
+        self.cum_idx = 0
+        for read, idx in self.walk:
+            self.cum_idx += idx
+            self.cumulative_indices[read] = self.cum_idx
                
     def build_overlaps(self):
-        self.result = [[ltr] for ltr in self.reads[0]]
-        reads_by_index =  sorted(self.cumulative_indices.items(), key=lambda x:x[1])
-        for each in reads_by_index:
+        self.result = np.zeros((len(self.walk), self.cum_idx + self.read_length))
+        print(self.result)
+        for each in self.walk:
             result_length = len(self.result)
             read, start = each
             overlap = result_length - start
@@ -111,10 +103,11 @@ class OverlapEP(object):
 #              ['A', 'G', 'C', 'A', 'C', 'G', 'A', 'C', 'T', 'T'],
 #              ['A', 'C', 'G', 'A', 'C', 'T', 'T', 'G', 'T', 'T']]
 test_reads = read_maker2.make_reads(errors=True)
-O=OverlapEP(8, test_reads)
+O=OverlapEP(8, 21, test_reads)
 print(O.reads)
 print(O.reads.shape)
 O.build_graph_ep()
-print(O.pair_overlap_list)
 print(O.walk)
+O.get_cumulative_indices()
+print(O.cumulative_indices)
     
