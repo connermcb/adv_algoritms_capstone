@@ -6,8 +6,9 @@ Overlap Assembler with Error-Prone Reads
 import phi_X174_formatter as fmtr
 import itertools as it
 import numpy as np
+np.set_printoptions(threshold=np.inf)
 import random
-import read_maker
+import read_maker2
 from statistics import mode
 import string
 import sys
@@ -18,19 +19,24 @@ class OverlapEP(object):
     def __init__(self, read_length, reads):
         self.read_length = read_length
         self.reads = np.array(reads)
-        self.pair_overlap_list = np.zeros((1618, 2))
-        self.searched = np.zeros(1618, dtype=bool)
+        self.walk = [(0,0)]
+        self.pair_overlap_list = np.zeros((21, 2))
+        self.searched = np.zeros(21, dtype=bool)
         self.graph = {}
         self.result = []
         self.nxt = 0
 
     def reads_compare(self, nxt):
-        for i in range(9, 0, -1):
-            test = self.reads[nxt, 10-i:] == self.reads[:, :i]
+        print(nxt, self.nxt)
+        for i in range(1, self.read_length):
+            test = self.reads[nxt, i:] == self.reads[:, :-i]
             counts = np.count_nonzero(test==0, axis=1)
             matches = np.nonzero(counts<3)
             if len(matches[0])>0:
+                print(i)
+                print(matches)
                 nxt = matches[0][0,]
+                self.walk.append((nxt, i))
                 self.pair_overlap_list[self.nxt,0] = nxt
                 self.pair_overlap_list[self.nxt,1] = i
                 self.searched[nxt] = True
@@ -40,7 +46,7 @@ class OverlapEP(object):
     def build_graph_ep(self):
         counter = 0
         while not np.all(self.searched):
-            if counter > 1618:
+            if counter > 16:
                 print('reached end')
                 return
             counter += 1
@@ -86,40 +92,29 @@ class OverlapEP(object):
             pos += 1
 
 
-test_reads = ["".join([random.choice('ACGT') for i in range(10)])\
-              for j in range(1618)]
 
-test_reads = [list(each) for each in test_reads]
 
-O = OverlapEP(10, test_reads)
+#test_reads = [['A', 'C', 'G', 'A', 'C', 'A', 'T', 'G', 'T', 'T'],
+#              ['C', 'T', 'T', 'G', 'T', 'T', 'T', 'G', 'C', 'C'],
+#              ['T', 'G', 'T', 'T', 'C', 'C', 'C', 'C', 'C', 'C'],
+#              ['T', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'G', 'T'],
+#              ['C', 'C', 'C', 'C', 'G', 'C', 'C', 'G', 'A', 'C'],
+#              ['C', 'A', 'G', 'A', 'C', 'G', 'T', 'C', 'C', 'C'],
+#              ['C', 'G', 'T', 'C', 'C', 'T', 'G', 'A', 'G', 'G'],
+#              ['C', 'C', 'G', 'A', 'G', 'T', 'T', 'C', 'T', 'C'],
+#              ['G', 'T', 'C', 'G', 'C', 'G', 'T', 'A', 'G', 'C'],
+#              ['C', 'T', 'C', 'G', 'T', 'A', 'C', 'C', 'G', 'T'],
+#              ['G', 'C', 'A', 'T', 'G', 'A', 'G', 'A', 'C', 'G'],
+#              ['G', 'T', 'C', 'A', 'G', 'A', 'C', 'G', 'A', 'G'],
+#              ['T', 'G', 'A', 'G', 'A', 'T', 'G', 'A', 'G', 'C'],
+#              ['A', 'C', 'G', 'A', 'G', 'C', 'A', 'C', 'G', 'A'],
+#              ['A', 'G', 'C', 'A', 'C', 'G', 'A', 'C', 'T', 'T'],
+#              ['A', 'C', 'G', 'A', 'C', 'T', 'T', 'G', 'T', 'T']]
+test_reads = read_maker2.make_reads(errors=True)
+O=OverlapEP(8, test_reads)
 print(O.reads)
-print(O.pair_overlap_list)
+print(O.reads.shape)
 O.build_graph_ep()
 print(O.pair_overlap_list)
-#print(test_reads)
-#print(len(test_reads))
-#print(len(test_reads[0]))
-#
-#reads = np.array(test_reads)#[:, np.newaxis]
-#print(reads)
-#print(reads.shape)
-#print(reads[0])
-#print(reads[1])
-#print(reads[0,0])
-#import time
-#start = time.time()
-#check = reads[0,:]==reads[1:,:]
-#print(time.time()-start)
-#print(check)
-#print(reads[9,0])
-#print(reads[0,0]==reads[1:,0])
-#if __name__ == "__main__":
-#    reads = []
-#    for i in range(1618):
-#        read = sys.stdin.readline().strip()
-#        reads.append(list(read))
-#    O = OverlapEP(100, reads)
-
-
-
+print(O.walk)
     
