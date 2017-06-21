@@ -23,11 +23,10 @@ class OverlapEP(object):
         self.walk = [(0,0)]
         self.searched = np.zeros(21, dtype=bool)
         self.graph = {}
-        self.result = []
+        self.result = [[] for i in range(36)]
         self.nxt = 0
 
     def reads_compare(self, nxt):
-        print(nxt, self.nxt)
         for i in range(1, self.read_length):
             test = self.reads[nxt, i:] == self.reads[:, :-i]
             counts = np.count_nonzero(test==0, axis=1)
@@ -56,19 +55,19 @@ class OverlapEP(object):
             self.cumulative_indices[read] = self.cum_idx
                
     def build_overlaps(self):
-        self.result = np.zeros((len(self.walk), self.cum_idx + self.read_length))
-        print(self.result)
+#        self.result = np.zeros((len(self.walk), self.cum_idx + self.read_length))
         for each in self.walk:
-            result_length = len(self.result)
-            read, start = each
-            overlap = result_length - start
-            for i in range(overlap):
-                self.result[start+i].append(read[i])
-            for j in range(overlap,len(read)):
-                self.result.append([read[j]])
+            read = self.reads[each[0],:]
+            start_idx = self.cumulative_indices[each[0]]
+            for i in range(len(read)):
+                self.result[(start_idx+i)%26].append(read[i])
+            
             
     def flatten_overlaps(self):
+        while len(self.result[-1]) < 1:
+            self.result.pop(-1)
         for pos in range(len(self.result)):
+            print(self.result[pos])
             try:
                 self.result[pos] = mode(self.result[pos])
             except:
@@ -86,28 +85,11 @@ class OverlapEP(object):
 
 
 
-#test_reads = [['A', 'C', 'G', 'A', 'C', 'A', 'T', 'G', 'T', 'T'],
-#              ['C', 'T', 'T', 'G', 'T', 'T', 'T', 'G', 'C', 'C'],
-#              ['T', 'G', 'T', 'T', 'C', 'C', 'C', 'C', 'C', 'C'],
-#              ['T', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'G', 'T'],
-#              ['C', 'C', 'C', 'C', 'G', 'C', 'C', 'G', 'A', 'C'],
-#              ['C', 'A', 'G', 'A', 'C', 'G', 'T', 'C', 'C', 'C'],
-#              ['C', 'G', 'T', 'C', 'C', 'T', 'G', 'A', 'G', 'G'],
-#              ['C', 'C', 'G', 'A', 'G', 'T', 'T', 'C', 'T', 'C'],
-#              ['G', 'T', 'C', 'G', 'C', 'G', 'T', 'A', 'G', 'C'],
-#              ['C', 'T', 'C', 'G', 'T', 'A', 'C', 'C', 'G', 'T'],
-#              ['G', 'C', 'A', 'T', 'G', 'A', 'G', 'A', 'C', 'G'],
-#              ['G', 'T', 'C', 'A', 'G', 'A', 'C', 'G', 'A', 'G'],
-#              ['T', 'G', 'A', 'G', 'A', 'T', 'G', 'A', 'G', 'C'],
-#              ['A', 'C', 'G', 'A', 'G', 'C', 'A', 'C', 'G', 'A'],
-#              ['A', 'G', 'C', 'A', 'C', 'G', 'A', 'C', 'T', 'T'],
-#              ['A', 'C', 'G', 'A', 'C', 'T', 'T', 'G', 'T', 'T']]
+
 test_reads = read_maker2.make_reads(errors=True)
 O=OverlapEP(8, 21, test_reads)
-print(O.reads)
-print(O.reads.shape)
 O.build_graph_ep()
-print(O.walk)
 O.get_cumulative_indices()
-print(O.cumulative_indices)
-    
+O.build_overlaps()
+O.flatten_overlaps()
+print("".join(O.result))
