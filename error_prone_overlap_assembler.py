@@ -73,14 +73,6 @@ class OverlapEP(object):
             except:
                 self.result = ['A' for x in range(6000)]
                 return
-    
-    def trim(self):
-        pos = 1
-        while True:
-            if self.result[:pos] == self.result[-pos:]:
-                self.result = self.result[:-pos]
-                return
-            pos += 1
 
 
 
