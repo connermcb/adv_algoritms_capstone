@@ -3,14 +3,9 @@
 """
 Overlap Assembler with Error-Prone Reads
 """
-import phi_X174_formatter as fmtr
-import itertools as it
+
 import numpy as np
-np.set_printoptions(threshold=np.inf)
-import random
-import read_maker2
 from statistics import mode
-import string
 import sys
 
 
@@ -21,9 +16,9 @@ class OverlapEP(object):
         self.num_reads = num_reads
         self.reads = np.array(reads)
         self.walk = [(0,0)]
-        self.searched = np.zeros(21, dtype=bool)
+        self.searched = np.zeros(num_reads, dtype=bool)
         self.graph = {}
-        self.result = [[] for i in range(36)]
+        self.result = [[] for i in range(5500)]
         self.nxt = 0
 
     def reads_compare(self, nxt):
@@ -41,8 +36,7 @@ class OverlapEP(object):
     def build_graph_ep(self):
         counter = 0
         while not np.all(self.searched):
-            if counter > 16:
-                print('reached end')
+            if counter > 1618:
                 return
             counter += 1
             self.reads_compare(self.nxt)
@@ -55,19 +49,17 @@ class OverlapEP(object):
             self.cumulative_indices[read] = self.cum_idx
                
     def build_overlaps(self):
-#        self.result = np.zeros((len(self.walk), self.cum_idx + self.read_length))
         for each in self.walk:
             read = self.reads[each[0],:]
             start_idx = self.cumulative_indices[each[0]]
             for i in range(len(read)):
-                self.result[(start_idx+i)%26].append(read[i])
+                self.result[(start_idx+i)%5396].append(read[i])
             
             
     def flatten_overlaps(self):
         while len(self.result[-1]) < 1:
             self.result.pop(-1)
         for pos in range(len(self.result)):
-            print(self.result[pos])
             try:
                 self.result[pos] = mode(self.result[pos])
             except:
@@ -75,13 +67,15 @@ class OverlapEP(object):
                 return
 
 
-
-
-
-test_reads = read_maker2.make_reads(errors=True)
-O=OverlapEP(8, 21, test_reads)
-O.build_graph_ep()
-O.get_cumulative_indices()
-O.build_overlaps()
-O.flatten_overlaps()
-print("".join(O.result))
+reads = []
+for i in range(1618):
+    read = sys.stdin.readline().strip()
+    read = list(read)
+    reads.append(read)
+    
+graph = OverlapEP(100, 1618, reads)
+graph.build_graph_ep()
+graph.get_cumulative_indices()
+graph.build_overlaps()
+graph.flatten_overlaps()
+print("".join(graph.result))
